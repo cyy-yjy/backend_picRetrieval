@@ -5,7 +5,9 @@
 ################################################################################################################################
 import random
 import tensorflow.compat.v1 as tf
+#import tensorflow._api.v2.compat.v1 as tf
 import numpy as np
+#需要安装imageio，scikit-learn，Pillow
 import imageio
 import os
 import scipy.io
@@ -49,7 +51,10 @@ def get_top_k_similar(image_data, pred, pred_final, k):
         print(top_k_ind)
         
         for i, neighbor in enumerate(top_k_ind):
-            image = imread(pred_final[neighbor])
+            print(i)#第几个
+            print(neighbor)#哪一幅图
+            print(len(pred_final))#第一次输出3000 第二次输出1000
+            image = imread(pred_final[neighbor])#这里报错了
             #timestr = datetime.now().strftime("%Y%m%d%H%M%S")
             #name= timestr+"."+str(i)
             name = pred_final[neighbor]
@@ -88,7 +93,7 @@ def run_bottleneck_on_image(sess, image_data, image_data_tensor,
     bottleneck_values = np.squeeze(bottleneck_values)
     return bottleneck_values
 
-def recommend(imagePath, extracted_features):
+def recommend(imagePath, extracted_features):#问题在于extracted_features有10000行
         tf.reset_default_graph()
 
         config = tf.ConfigProto(

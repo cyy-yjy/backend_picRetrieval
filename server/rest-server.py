@@ -5,6 +5,7 @@
 # here as json and being branched out to each projects. Basic level of validation is also being done in this file. #                                                                                                                                  	       
 #-------------------------------------------------------------------------------------------------------------------------------                                                                                                                              
 ################################################################################################################################
+#包中需要安装：flask numpy scipy tensorflow
 from flask import Flask, jsonify, abort, request, make_response, url_for,redirect, render_template
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.utils import secure_filename
@@ -16,10 +17,9 @@ import tarfile
 from datetime import datetime
 from scipy import ndimage
 #from scipy.misc import imsave
-
+from tensorflow.python.platform import gfile
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
-from tensorflow.python.platform import gfile
 app = Flask(__name__, static_url_path = "")
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 auth = HTTPBasicAuth()
@@ -30,7 +30,7 @@ auth = HTTPBasicAuth()
 #                                                                          						        
 #                                                                                                                              
 #==============================================================================================================================
-extracted_features=np.zeros((10000,2048),dtype=np.float32)
+extracted_features=np.zeros((1000,2048),dtype=np.float32)
 with open('saved_features_recom.txt') as f:
     		for i,line in enumerate(f):
         		extracted_features[i,:]=line.split()

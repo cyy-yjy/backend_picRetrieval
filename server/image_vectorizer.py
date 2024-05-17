@@ -46,7 +46,6 @@ def create_inception_graph():
 
 def run_bottleneck_on_image(sess, image_data, image_data_tensor,
                             bottleneck_tensor):
-
   	bottleneck_values = sess.run(
       		bottleneck_tensor,
       		{image_data_tensor: image_data})
@@ -64,7 +63,7 @@ def iter_files(rootDir):
     return all_files
 
 # Get outputs from second-to-last layer in pre-built model
-
+#图片放在database/dataset
 img_files = iter_files('database/dataset')
 #sandals_files = iter_files('uploads/dogs_and_cats/Sandals')
 #shoes_files = iter_files('uploads/dogs_and_cats/Shoes')
@@ -75,7 +74,7 @@ all_files = img_files#boots_files + shoes_files + slippers_files + sandals_files
 
 random.shuffle(all_files)
 
-num_images = 10000
+num_images = 1000#它决定了取出多少图片
 neighbor_list = all_files[:num_images]
 with open('neighbor_list_recom.pickle','wb') as f:
         pickle.dump(neighbor_list,f)
@@ -93,7 +92,7 @@ for i, filename in enumerate(neighbor_list):
 
     extracted_features[i:i+1] = features
 
-    if i % 250 == 0:
+    if i % 100 == 0:
         print(i)
 
 
