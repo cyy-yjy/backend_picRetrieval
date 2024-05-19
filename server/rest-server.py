@@ -114,8 +114,8 @@ def upload_img():
            
         #     print('No selected file')
         #     return redirect(request.url)
-        filename = request.form.get('filename')
-        queryNumber = int(request.form.get('queryNumber'))
+        filename = request.get_json().get('info').get('filename','')
+        queryNumber = request.get_json().get('info').get('queryNumber',0)
         print(queryNumber)
         print(filename)
         # print(type(queryNumber))
@@ -197,9 +197,9 @@ def like_image():
         "isError": True,
         "msg": "",
     }
-    data = request.form
-    filename = data.get('filename')
-    like = int(data.get('like'))
+    data = request.get_json()
+    filename = data.get('info').get('filename','')
+    like = data.get('info').get('like',0)
     print(filename)
 
     if not filename:
