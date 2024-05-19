@@ -231,14 +231,14 @@ def like_image():
 @app.route('/api/getAllLikes', methods=['GET', 'POST'])
 def get_all_likes():
     response={
-        "isError": True,
+        response:{"isError": True,
         "msg": "",
         "data": {
         "list": [
             {
             }
         ]
-        }
+        }}
     }
     img_tags=[]
     print(len(like_status))
