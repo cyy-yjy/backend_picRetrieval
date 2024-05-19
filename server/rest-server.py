@@ -174,9 +174,11 @@ def upload_img():
 			# 'image8':image_list[8]
 		    #   }			
             response={
-                "isError": isError,
+                response:{"isError": isError,
                 "msg": msg,
                 "data": {
+                     "like":check_in_like(filename),
+                     "tags":unique_tags,
                     "list": [
                         {
                             "filename": img_name,
@@ -184,7 +186,7 @@ def upload_img():
                             "tags": img_tag
                         }for img_name, img_like, img_tag in zip(img_names, img_likes, img_tags)
                     ]
-                }
+                }}
             }
             # result.update({"all_tags":unique_tags})
             return jsonify(response)
@@ -199,7 +201,7 @@ def like_image():
     }
     data = request.get_json()
     filename = data.get('info').get('filename','')
-    like = data.get('info').get('like',0)
+    like = data.get('like',0)
     print(filename)
 
     if not filename:
