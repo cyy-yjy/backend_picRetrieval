@@ -174,7 +174,7 @@ def upload_img():
         # 'image8':image_list[8]
         #   }			
         response={
-            response:{"isError": isError,
+            "response":{"isError": isError,
             "msg": msg,
             "data": {
                     "like":check_in_like(filename),
@@ -202,7 +202,7 @@ def like_image():
     }
     data = request.get_json()
     filename = data.get('info').get('filename','')
-    like = data.get('like',0)
+    like = data.get('info').get('like')
     print(filename)
 
     if not filename:
@@ -226,18 +226,17 @@ def like_image():
                 response["response"]["msg"] = "Operation successful."   
             else:
                 response["response"]["msg"]= 'not yet liked'
+    print(like)
     print(like_status) 
     return jsonify(response)
 #获取收藏
 @app.route('/api/getAllLikes', methods=['GET', 'POST'])
 def get_all_likes():
     response={
-        response:{"isError": True,
+        "response":{"isError": True,
         "msg": "",
         "data": {
         "list": [
-            {
-            }
         ]
         }}
     }
@@ -246,7 +245,7 @@ def get_all_likes():
     for i in range(len(like_status)):
         print(i)
         tags=find_tag(like_status[i])
-        response["data"]["list"].append({
+        response["response"]["data"]["list"].append({
         "filename": like_status[i],
         "isCollected": "1",  # 因为这里是获取所有已 like 的图片，状态都为已 like
         "tags": tags
