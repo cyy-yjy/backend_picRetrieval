@@ -129,75 +129,76 @@ def upload_img():
             isError=True
             print(isError)
             msg="not allow"
-        if 'filename' in request.form:# and allowed_file(file.filename):
+        # if 'filename' in request.form:# and allowed_file(file.filename):
             #确保文件名安全
             # filename = secure_filename(filename)
             # #将文件上传到指定文件夹
             # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             #构造上传文件的完整路径
-            inputloc = os.path.join("database\dataset", filename)
-            print(inputloc)
-            #图像搜索
-            recommend(inputloc, extracted_features,queryNumber)
-            os.remove(inputloc)
-            image_path = "/result"
-            #文件名
-            img_names=[os.path.basename(file)for file in os.listdir(result)
-                              if not file.startswith('.')]
-            #文件路径
-            image_list =[os.path.join(image_path, file) for file in os.listdir(result)
-                              if not file.startswith('.')]
-            print(result)
-            #tag
-            img_tags=[]
-            img_likes=[]
-            for i in range(len(image_list)):
-                 img_tags.append(find_tag(image_list[i]))
-                 img_likes.append(check_in_like(img_names[i]))
-            print(img_tags)
-            print(img_likes)
-            tags={f'tag{i}':img_tags[i] for i in range(len(img_tags))}
-            all_tags=[]
-            for sublist in img_tags:
-                 for tag in sublist:
-                      all_tags.append(tag)
-            unique_tags=list(set(all_tags))
-            # images = {
-			# 'image0':image_list[0],
-            # 'image1':image_list[1],	
-			# 'image2':image_list[2],	
-			# 'image3':image_list[3],	
-			# 'image4':image_list[4],	
-			# 'image5':image_list[5],	
-			# 'image6':image_list[6],	
-			# 'image7':image_list[7],	
-			# 'image8':image_list[8]
-		    #   }			
-            response={
-                response:{"isError": isError,
-                "msg": msg,
-                "data": {
-                     "like":check_in_like(filename),
-                     "tags":unique_tags,
-                    "list": [
-                        {
-                            "filename": img_name,
-                            "isCollected": img_like,
-                            "tags": img_tag
-                        }for img_name, img_like, img_tag in zip(img_names, img_likes, img_tags)
-                    ]
-                }}
-            }
-            # result.update({"all_tags":unique_tags})
-            return jsonify(response)
+        inputloc = os.path.join("database\dataset", filename)
+        print(inputloc)
+        #图像搜索
+        recommend(inputloc, extracted_features,queryNumber)
+        os.remove(inputloc)
+        image_path = "/result"
+        #文件名
+        img_names=[os.path.basename(file)for file in os.listdir(result)
+                            if not file.startswith('.')]
+        #文件路径
+        image_list =[os.path.join(image_path, file) for file in os.listdir(result)
+                            if not file.startswith('.')]
+        print(result)
+        #tag
+        img_tags=[]
+        img_likes=[]
+        for i in range(len(image_list)):
+                img_tags.append(find_tag(image_list[i]))
+                img_likes.append(check_in_like(img_names[i]))
+        print(img_tags)
+        print(img_likes)
+        tags={f'tag{i}':img_tags[i] for i in range(len(img_tags))}
+        all_tags=[]
+        for sublist in img_tags:
+                for tag in sublist:
+                    all_tags.append(tag)
+        unique_tags=list(set(all_tags))
+        # images = {
+        # 'image0':image_list[0],
+        # 'image1':image_list[1],	
+        # 'image2':image_list[2],	
+        # 'image3':image_list[3],	
+        # 'image4':image_list[4],	
+        # 'image5':image_list[5],	
+        # 'image6':image_list[6],	
+        # 'image7':image_list[7],	
+        # 'image8':image_list[8]
+        #   }			
+        response={
+            response:{"isError": isError,
+            "msg": msg,
+            "data": {
+                    "like":check_in_like(filename),
+                    "tags":unique_tags,
+                "list": [
+                    {
+                        "filename": img_name,
+                        "isCollected": img_like,
+                        "tags": img_tag
+                    }for img_name, img_like, img_tag in zip(img_names, img_likes, img_tags)
+                ]
+            }}
+        }
+        # result.update({"all_tags":unique_tags})
+        return jsonify(response)
 #加入收藏
 like_status = []
 @app.route('/api/likeImage', methods=['GET', 'POST'])
 def like_image():
     print(1)
     response = {
-        "isError": True,
-        "msg": "",
+        "response":{
+             "isError": True,
+             "msg": "",}
     }
     data = request.get_json()
     filename = data.get('info').get('filename','')
@@ -205,26 +206,26 @@ def like_image():
     print(filename)
 
     if not filename:
-        response["msg"] = "Filename is required."
+        response["response"]["msg"] = "Filename is required."
         return jsonify(response)
     if like is not None:
         if not isinstance(like, int):
-            response["msg"] = "Like value must be an integer."
+            response["response"]["msg"] = "Like value must be an integer."
             return jsonify(response)
         if like==1:
             if filename not in like_status:
                 like_status.append(filename)
-                response["isError"] = False
-                response["msg"] = "Operation successful."   
+                response["response"]["isError"] = False
+                response["response"]["msg"] = "Operation successful."   
             else:
-                 response["msg"] = 'already liked'
+                 response["response"]["msg"] = 'already liked'
         if like==0:
             if filename in like_status:
                 like_status.remove(filename)
-                response["isError"] = False
-                response["msg"] = "Operation successful."   
+                response["response"]["isError"] = False
+                response["response"]["msg"] = "Operation successful."   
             else:
-                response["msg"] = 'not yet liked'
+                response["response"]["msg"]= 'not yet liked'
     print(like_status) 
     return jsonify(response)
 #获取收藏
@@ -250,8 +251,8 @@ def get_all_likes():
         "isCollected": "1",  # 因为这里是获取所有已 like 的图片，状态都为已 like
         "tags": tags
         })
-    response['msg']="success"
-    response['isError']=False
+    response["response"]['msg']="success"
+    response["response"]['isError']=False
     return jsonify(response)
 @app.route('/api/testPost', methods=['POST'])
 def testPost():

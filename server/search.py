@@ -35,7 +35,7 @@ MAX_NUM_IMAGES_PER_CLASS = 2 ** 27 - 1  # ~134M
 
 #show_neighbors(random.randint(0, len(extracted_features)), indices, neighbor_list)
 
-def get_top_k_similar(image_data, pred, pred_final, k):
+def get_top_k_similar(original_image_path,image_data, pred, pred_final, k):
         print("total data",len(pred))
         print(image_data.shape)
         #for i in pred:
@@ -43,11 +43,15 @@ def get_top_k_similar(image_data, pred, pred_final, k):
                 #break
         os.mkdir('static/result')
         print(image_data)
-    # cosine calculates the cosine distance, not similiarity. Hence no need to reverse list
-        top_k_ind = np.argsort([cosine(image_data, pred_row) \
-                            for ith_row, pred_row in enumerate(pred)])[:k]
+        # cosine calculates the cosine distance, not similiarity. Hence no need to reverse list
+        # top_k_ind = np.argsort([cosine(image_data, pred_row) \
+        #                     for ith_row, pred_row in enumerate(pred)])[:k]
+        # Compute cosine distances
+        distances = [(cosine(image_data, pred_row), idx) for idx, pred_row in enumerate(pred)]
+        distances.sort(key=lambda x: x[0])
+        # Filter out the original image
+        top_k_ind = [idx for dist, idx in distances if pred_final[idx] != original_image_path][:k]
         print(top_k_ind)
-        
         for i, neighbor in enumerate(top_k_ind):
             image = imread(pred_final[neighbor])
             #timestr = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -107,5 +111,5 @@ def recommend(imagePath, extracted_features,queryNumber):
         with open('neighbor_list_recom.pickle','rb') as f:
                     neighbor_list = pickle.load(f)
         print("loaded images")
-        get_top_k_similar(features, extracted_features, neighbor_list,queryNumber)
+        get_top_k_similar(imagePath,features, extracted_features, neighbor_list,queryNumber)
 
