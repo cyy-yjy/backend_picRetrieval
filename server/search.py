@@ -5,9 +5,7 @@
 ################################################################################################################################
 import random
 import tensorflow.compat.v1 as tf
-#import tensorflow._api.v2.compat.v1 as tf
 import numpy as np
-#需要安装imageio，scikit-learn，Pillow
 import imageio
 import os
 import scipy.io
@@ -44,17 +42,14 @@ def get_top_k_similar(image_data, pred, pred_final, k):
         #print(i.shape)
                 #break
         os.mkdir('static/result')
-        
+        print(image_data)
     # cosine calculates the cosine distance, not similiarity. Hence no need to reverse list
         top_k_ind = np.argsort([cosine(image_data, pred_row) \
                             for ith_row, pred_row in enumerate(pred)])[:k]
         print(top_k_ind)
         
         for i, neighbor in enumerate(top_k_ind):
-            print(i)#第几个
-            print(neighbor)#哪一幅图
-            print(len(pred_final))#第一次输出3000 第二次输出1000
-            image = imread(pred_final[neighbor])#这里报错了
+            image = imread(pred_final[neighbor])
             #timestr = datetime.now().strftime("%Y%m%d%H%M%S")
             #name= timestr+"."+str(i)
             name = pred_final[neighbor]
@@ -63,6 +58,8 @@ def get_top_k_similar(image_data, pred, pred_final, k):
             print(img_name)
             name = 'static/result/'+img_name
             imsave(name, image)
+        print(os.listdir('static/result'))
+
 
                 
 def create_inception_graph():
@@ -93,20 +90,22 @@ def run_bottleneck_on_image(sess, image_data, image_data_tensor,
     bottleneck_values = np.squeeze(bottleneck_values)
     return bottleneck_values
 
-def recommend(imagePath, extracted_features):#问题在于extracted_features有10000行
+def recommend(imagePath, extracted_features,queryNumber):
         tf.reset_default_graph()
 
         config = tf.ConfigProto(
             device_count = {'GPU': 0}
         )
-
         sess = tf.Session(config=config)
         graph, bottleneck_tensor, jpeg_data_tensor, resized_image_tensor = (create_inception_graph())
+        # print(imagePath)
+        # if os.path.exists(imagePath):
+        #     print("1")
         image_data = gfile.FastGFile(imagePath, 'rb').read()
         features = run_bottleneck_on_image(sess, image_data, jpeg_data_tensor, bottleneck_tensor)	
 
         with open('neighbor_list_recom.pickle','rb') as f:
                     neighbor_list = pickle.load(f)
         print("loaded images")
-        get_top_k_similar(features, extracted_features, neighbor_list, k=9)
+        get_top_k_similar(features, extracted_features, neighbor_list,queryNumber)
 
